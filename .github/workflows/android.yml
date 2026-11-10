@@ -13,18 +13,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Extract Android project
+        run: |
+          unzip -q NEXUS_TV_DESKTOP_V6_SOURCE.zip -d /tmp/nexus-tv-source
+          cp -a /tmp/nexus-tv-source/app ./app
+          cp /tmp/nexus-tv-source/build.gradle.kts .
+          cp /tmp/nexus-tv-source/gradle.properties .
+          cp /tmp/nexus-tv-source/settings.gradle.kts .
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "17"
-      - uses: android-actions/setup-android@v3
-      - name: Install Android SDK
-        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Install Android SDK packages
+        run: |
+          yes | sdkmanager --licenses
+          sdkmanager --install "platforms;android-35" "build-tools;35.0.0"
+
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.9"
+
       - name: Build debug APK
         run: gradle :app:assembleDebug
+
       - uses: actions/upload-artifact@v4
         with:
           name: nexus-tv-desktop-v6-debug
