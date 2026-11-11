@@ -23,6 +23,21 @@ jobs:
           cp /tmp/nexus-tv-source/gradle.properties .
           cp /tmp/nexus-tv-source/settings.gradle.kts .
 
+      - name: Align Java and Kotlin JVM targets
+        run: |
+          cat >> app/build.gradle.kts <<'EOF'
+
+          android {
+              compileOptions {
+                  sourceCompatibility = JavaVersion.VERSION_17
+                  targetCompatibility = JavaVersion.VERSION_17
+              }
+              kotlinOptions {
+                  jvmTarget = "17"
+              }
+          }
+          EOF
+
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
